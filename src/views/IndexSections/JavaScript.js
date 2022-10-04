@@ -18,7 +18,7 @@
 import React from "react";
 import classnames from "classnames";
 // react plugin used to create datetimepicker
-import ReactDatetime from "react-datetime";
+// import ReactDatetime from "react-datetime";
 
 // reactstrap components
 import {
@@ -38,25 +38,25 @@ import {
   InputGroupAddon,
   InputGroupText,
   Label,
-  UncontrolledCarousel
+  UncontrolledCarousel,
 } from "reactstrap";
 
 const carouselItems = [
   {
     src: require("assets/img/denys.jpg"),
     altText: "Slide 1",
-    caption: ""
+    caption: "",
   },
   {
     src: require("assets/img/fabien-bazanegue.jpg"),
     altText: "Slide 2",
-    caption: ""
+    caption: "",
   },
   {
     src: require("assets/img/mark-finn.jpg"),
     altText: "Slide 3",
-    caption: ""
-  }
+    caption: "",
+  },
 ];
 
 export default function JavaScript() {
@@ -197,7 +197,7 @@ export default function JavaScript() {
                 <FormGroup className="mb-3">
                   <InputGroup
                     className={classnames("input-group-alternative", {
-                      "input-group-focus": emailFocus
+                      "input-group-focus": emailFocus,
                     })}
                   >
                     <InputGroupAddon addonType="prepend">
@@ -216,7 +216,7 @@ export default function JavaScript() {
                 <FormGroup>
                   <InputGroup
                     className={classnames("input-group-alternative", {
-                      "input-group-focus": passwordFocus
+                      "input-group-focus": passwordFocus,
                     })}
                   >
                     <InputGroupAddon addonType="prepend">
@@ -256,12 +256,12 @@ export default function JavaScript() {
           <Col md="4">
             <div className="datepicker-container">
               <FormGroup>
-                <ReactDatetime
+                {/* <ReactDatetime
                   inputProps={{
                     className: "form-control",
                     placeholder: "Date Picker Here"
                   }}
-                />
+                /> */}
               </FormGroup>
             </div>
           </Col>

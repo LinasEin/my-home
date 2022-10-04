@@ -17,7 +17,7 @@
 */
 import React from "react";
 // react plugin used to create charts
-import { Line } from "react-chartjs-2";
+// import { Line } from "react-chartjs-2";
 // reactstrap components
 import {
   Button,
@@ -30,7 +30,7 @@ import {
   ListGroup,
   Container,
   Row,
-  Col
+  Col,
 } from "reactstrap";
 
 // core components
@@ -459,10 +459,10 @@ export default function LandingPage() {
               </CardHeader>
               <CardBody>
                 <div className="chart-area">
-                  <Line
+                  {/* <Line
                     data={bigChartData.data}
                     options={bigChartData.options}
-                  />
+                  /> */}
                 </div>
               </CardBody>
             </Card>
