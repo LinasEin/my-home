@@ -17,7 +17,7 @@
 */
 import React from "react";
 import ReactDOM from "react-dom/client";
-import { BrowserRouter, Route, Switch, Redirect } from "react-router-dom";
+import { BrowserRouter, Route, Switch } from "react-router-dom";
 
 import "assets/css/nucleo-icons.css";
 import "assets/scss/blk-design-system-react.scss";
@@ -33,7 +33,6 @@ const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
   <BrowserRouter>
     <Switch>
-      <Route path="/" render={(props) => <Index {...props} />} />
       <Route
         path="/landing-page"
         render={(props) => <LandingPage {...props} />}
@@ -46,6 +45,7 @@ root.render(
         path="/profile-page"
         render={(props) => <ProfilePage {...props} />}
       />
+      <Route path="/" render={(props) => <Index {...props} />} />
     </Switch>
   </BrowserRouter>
 );
