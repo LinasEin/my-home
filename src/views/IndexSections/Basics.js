@@ -16,287 +16,444 @@
 
 */
 import React from "react";
-import classnames from "classnames";
-// plugin that creates slider
-import Slider from "nouislider";
-
-// reactstrap components
 import {
   Button,
-  Label,
-  FormGroup,
-  CustomInput,
-  Input,
-  InputGroupAddon,
-  InputGroupText,
-  InputGroup,
+  Card,
+  CardHeader,
+  CardBody,
+  CardFooter,
+  CardTitle,
+  ListGroupItem,
+  ListGroup,
   Container,
   Row,
-  Col
+  Col,
 } from "reactstrap";
 
+// core components
+import Footer from "components/Footer/Footer.js";
+
 export default function Basics() {
-  const [inputFocus, setInputFocus] = React.useState(false);
-  const slider1 = React.useRef(null);
-  const slider2 = React.useRef(null);
-  React.useEffect(() => {
-    Slider.create(slider1.current, {
-      start: [40],
-      connect: [true, false],
-      step: 1,
-      range: { min: 0, max: 100 }
-    });
-    Slider.create(slider2.current, {
-      start: [20, 60],
-      connect: [false, true, false],
-      step: 1,
-      range: { min: 0, max: 100 }
-    });
-  }, []);
+  // const handleGetTokenInfo = async (e) => {
+  //   e.preventDefault();
+  //   const data = new FormData(e.target);
+  //   const provider = new ethers.providers.Web3Provider(window.ethereum);
+
+  //   const erc20 = new ethers.Contract(data.get("addr"), erc20abi, provider);
+
+  //   const tokenName = await erc20.name();
+  //   const tokenSymbol = await erc20.symbol();
+  //   const totalSupply = await erc20.totalSupply();
+
+  //   setContractInfo({
+  //     address: data.get("addr"),
+  //     tokenName,
+  //     tokenSymbol,
+  //     totalSupply,
+  //   });
+  // };
+  // React.useEffect(() => {
+  //   document.body.classList.toggle("landing-page");
+  //   // Specify how to clean up after this effect:
+  //   return function cleanup() {
+  //     document.body.classList.toggle("landing-page");
+  //   };
+  // }, []);
+
   return (
-    <div className="section section-basic" id="basic-elements">
-      <img alt="..." className="path" src={require("assets/img/path1.png")} />
-      <Container>
-        <h2 className="title">Basic Elements</h2>
-        <h3>Buttons</h3>
-        <p className="category">Pick your style</p>
-        <Row>
-          <Col md="10">
-            <Button color="primary" type="button">
-              Default
-            </Button>
-            <Button className="btn-round" color="primary" type="button">
-              Round
-            </Button>
-            <Button className="btn-round" color="primary" type="button">
-              <i className="tim-icons icon-heart-2" />
-              With Icon
-            </Button>
-            <Button
-              className="btn-icon btn-round"
-              color="primary"
-              type="button"
-            >
-              <i className="tim-icons icon-heart-2" />
-            </Button>
-            <Button
-              className="btn-simple btn-round"
-              color="primary"
-              type="button"
-            >
-              Simple
-            </Button>
-          </Col>
-        </Row>
-        <p className="category">Pick your size</p>
-        <Row>
-          <Col md="10">
-            <Button color="primary" size="sm">
-              Small
-            </Button>
-            <Button color="primary">Regular</Button>
-            <Button color="primary" size="lg">
-              Large
-            </Button>
-          </Col>
-        </Row>
-        <p className="category">Pick your color</p>
-        <Row>
-          <Col md="12">
-            <Button color="default">Default</Button>
-            <Button color="primary">Primary</Button>
-            <Button color="info">Info</Button>
-            <Button color="success">Success</Button>
-            <Button color="warning">Warning</Button>
-            <Button color="danger">Danger</Button>
-            <Button className="btn-neutral" color="default">
-              Neutral
-            </Button>
-          </Col>
-        </Row>
-        <br />
-        <h3>Links</h3>
-        <Row>
-          <Col md="8">
-            <Button color="link">Default</Button>
-            <Button className="btn-link" color="primary">
-              Primary
-            </Button>
-            <Button className="btn-link" color="info">
-              Info
-            </Button>
-            <Button className="btn-link" color="success">
-              Success
-            </Button>
-            <Button className="btn-link" color="warning">
-              Warning
-            </Button>
-            <Button className="btn-link" color="danger">
-              Danger
-            </Button>
-          </Col>
-        </Row>
-        <div className="space-70" />
-        <div id="inputs">
-          <h3>Inputs</h3>
-          <p className="category">Form Controls</p>
-          <Row>
-            <Col lg="3" sm="6">
-              <FormGroup>
-                <Input defaultValue="" placeholder="Regular" type="text" />
-              </FormGroup>
-            </Col>
-            <Col lg="3" sm="6">
-              <FormGroup className="has-success">
-                <Input
-                  className="form-control-success"
-                  defaultValue="Success"
-                  type="text"
-                />
-              </FormGroup>
-            </Col>
-            <Col lg="3" sm="6">
-              <FormGroup className="has-danger">
-                <Input
-                  className="form-control-danger"
-                  defaultValue="Error Input"
-                  type="email"
-                />
-              </FormGroup>
-            </Col>
-            <Col lg="3" sm="6">
-              <InputGroup
-                className={classnames({
-                  "input-group-focus": inputFocus
-                })}
-              >
-                <InputGroupAddon addonType="prepend">
-                  <InputGroupText>
-                    <i className="fa fa-user" />
-                  </InputGroupText>
-                </InputGroupAddon>
-                <Input
-                  placeholder="Left Font Awesome Icon"
-                  type="text"
-                  onFocus={(e) => setInputFocus(true)}
-                  onBlur={(e) => setInputFocus(false)}
-                />
-              </InputGroup>
-            </Col>
-            <Col lg="3" sm="6">
-              <InputGroup>
-                <Input placeholder="Right Nucleo Icon" type="text" />
-                <InputGroupAddon addonType="append">
-                  <InputGroupText>
-                    <i className="tim-icons icon-lock-circle" />
-                  </InputGroupText>
-                </InputGroupAddon>
-              </InputGroup>
-            </Col>
-          </Row>
+    <>
+      <div className="section section-basic" id="basic-elements">
+        <img alt="..." className="path" src={require("assets/img/path1.png")} />
+      </div>
+      <div>
+        <div className="wrapper">
+          {/* <div className="page-header">
+            <img
+              alt="..."
+              className="path"
+              src={require("assets/img/blob.png")}
+            />
+            <img
+              alt="..."
+              className="path2"
+              src={require("assets/img/path2.png")}
+            />
+            <img
+              alt="..."
+              className="shapes triangle"
+              src={require("assets/img/triunghiuri.png")}
+            />
+            <img
+              alt="..."
+              className="shapes wave"
+              src={require("assets/img/waves.png")}
+            />
+            <img
+              alt="..."
+              className="shapes squares"
+              src={require("assets/img/patrat.png")}
+            />
+            <img
+              alt="..."
+              className="shapes circle"
+              src={require("assets/img/cercuri.png")}
+            />
+            <div className="content-center">
+              <Row className="row-grid justify-content-between align-items-center text-left">
+                <Col lg="6" md="6">
+                  <h1 className="text-white">
+                    We keep your assets <br />
+                    <span className="text-white">secured</span>
+                  </h1>
+                  <p className="text-white mb-3">
+                    A wonderful serenity has taken possession of my entire soul,
+                    like these sweet mornings of spring which I enjoy with my
+                    whole heart. I am alone, and feel...
+                  </p>
+                  <div className="btn-wrapper mb-3">
+                    <p className="category text-success d-inline">
+                      From 9.99%/mo
+                    </p>
+                    <Button
+                      className="btn-link"
+                      color="success"
+                      href="#pablo"
+                      onClick={(e) => e.preventDefault()}
+                      size="sm"
+                    >
+                      <i className="tim-icons icon-minimal-right" />
+                    </Button>
+                  </div>
+                  <div className="btn-wrapper">
+                    <div className="button-container">
+                      <Button
+                        className="btn-icon btn-simple btn-round btn-neutral"
+                        color="default"
+                        href="#pablo"
+                        onClick={(e) => e.preventDefault()}
+                      >
+                        <i className="fab fa-twitter" />
+                      </Button>
+                      <Button
+                        className="btn-icon btn-simple btn-round btn-neutral"
+                        color="default"
+                        href="#pablo"
+                        onClick={(e) => e.preventDefault()}
+                      >
+                        <i className="fab fa-dribbble" />
+                      </Button>
+                      <Button
+                        className="btn-icon btn-simple btn-round btn-neutral"
+                        color="default"
+                        href="#pablo"
+                        onClick={(e) => e.preventDefault()}
+                      >
+                        <i className="fab fa-facebook" />
+                      </Button>
+                    </div>
+                  </div>
+                </Col>
+                <Col lg="4" md="5">
+                  <img
+                    alt="..."
+                    className="img-fluid"
+                    src={require("assets/img/etherum.png")}
+                  />
+                </Col>
+              </Row>
+            </div>
+          </div> */}
+          <section className="section section-lg">
+            <section className="section">
+              <img
+                alt="..."
+                className="path"
+                src={require("assets/img/path5.png")}
+              />
+              <Container>
+                <Row className="row-grid justify-content-between">
+                  <Col className="mt-lg-5" md="5">
+                    <Row>
+                      <Col className="px-2 py-2" lg="6" sm="12">
+                        <Card className="card-stats">
+                          <CardBody>
+                            <Row>
+                              <Col md="4" xs="5">
+                                <div className="icon-big text-center icon-warning">
+                                  <i className="tim-icons icon-trophy text-warning" />
+                                </div>
+                              </Col>
+                              <Col md="8" xs="7">
+                                <div className="numbers">
+                                  <CardTitle tag="p">3,237</CardTitle>
+                                  <p />
+                                  <p className="card-category">Awards</p>
+                                </div>
+                              </Col>
+                            </Row>
+                          </CardBody>
+                        </Card>
+                      </Col>
+                      <Col className="px-2 py-2" lg="6" sm="12">
+                        <Card className="card-stats upper bg-default">
+                          <CardBody>
+                            <Row>
+                              <Col md="4" xs="5">
+                                <div className="icon-big text-center icon-warning">
+                                  <i className="tim-icons icon-coins text-white" />
+                                </div>
+                              </Col>
+                              <Col md="8" xs="7">
+                                <div className="numbers">
+                                  <CardTitle tag="p">3,653</CardTitle>
+                                  <p />
+                                  <p className="card-category">Commits</p>
+                                </div>
+                              </Col>
+                            </Row>
+                          </CardBody>
+                        </Card>
+                      </Col>
+                    </Row>
+                    <Row>
+                      <Col className="px-2 py-2" lg="6" sm="12">
+                        <Card className="card-stats">
+                          <CardBody>
+                            <Row>
+                              <Col md="4" xs="5">
+                                <div className="icon-big text-center icon-warning">
+                                  <i className="tim-icons icon-gift-2 text-info" />
+                                </div>
+                              </Col>
+                              <Col md="8" xs="7">
+                                <div className="numbers">
+                                  <CardTitle tag="p">593</CardTitle>
+                                  <p />
+                                  <p className="card-category">Presents</p>
+                                </div>
+                              </Col>
+                            </Row>
+                          </CardBody>
+                        </Card>
+                      </Col>
+                      <Col className="px-2 py-2" lg="6" sm="12">
+                        <Card className="card-stats">
+                          <CardBody>
+                            <Row>
+                              <Col md="4" xs="5">
+                                <div className="icon-big text-center icon-warning">
+                                  <i className="tim-icons icon-credit-card text-success" />
+                                </div>
+                              </Col>
+                              <Col md="8" xs="7">
+                                <div className="numbers">
+                                  <CardTitle tag="p">10,783</CardTitle>
+                                  <p />
+                                  <p className="card-category">Forks</p>
+                                </div>
+                              </Col>
+                            </Row>
+                          </CardBody>
+                        </Card>
+                      </Col>
+                    </Row>
+                  </Col>
+                  <Col md="6">
+                    <div className="pl-md-5">
+                      <h1>
+                        Large <br />
+                        Achivements
+                      </h1>
+                      <p>
+                        I should be capable of drawing a single stroke at the
+                        present moment; and yet I feel that I never was a
+                        greater artist than now.
+                      </p>
+                      <br />
+                      <p>
+                        When, while the lovely valley teems with vapour around
+                        me, and the meridian sun strikes the upper surface of
+                        the impenetrable foliage of my trees, and but a few
+                        stray.
+                      </p>
+                      <br />
+                      <a
+                        className="font-weight-bold text-info mt-5"
+                        href="#pablo"
+                        onClick={(e) => e.preventDefault()}
+                      >
+                        Show all{" "}
+                        <i className="tim-icons icon-minimal-right text-info" />
+                      </a>
+                    </div>
+                  </Col>
+                </Row>
+              </Container>
+            </section>
+          </section>
+          <section className="section section-lg">
+            {/* <img
+              alt="..."
+              className="path"
+              src={require("assets/img/path3.png")}
+            /> */}
+            {/* <img
+              alt="..."
+              className="path"
+              src={require("assets/img/path4.png")}
+            />
+            <img
+              alt="..."
+              className="path2"
+              src={require("assets/img/path5.png")}
+            />
+            <img
+              alt="..."
+              className="path3"
+              src={require("assets/img/path2.png")}
+            /> */}
+            <Container>
+              <Row className="justify-content-center">
+                <Col lg="12">
+                  <h1 className="text-center">Your best benefit</h1>
+                  <Row className="row-grid justify-content-center">
+                    <Col lg="3">
+                      <div className="info">
+                        <div className="icon icon-primary">
+                          <i className="tim-icons icon-money-coins" />
+                        </div>
+                        <h4 className="info-title">Low Commission</h4>
+                        <hr className="line-primary" />
+                        <p>
+                          Divide details about your work into parts. Write a few
+                          lines about each one. A paragraph describing a feature
+                          will.
+                        </p>
+                      </div>
+                    </Col>
+                    <Col lg="3">
+                      <div className="info">
+                        <div className="icon icon-warning">
+                          <i className="tim-icons icon-chart-pie-36" />
+                        </div>
+                        <h4 className="info-title">High Incomes</h4>
+                        <hr className="line-warning" />
+                        <p>
+                          Divide details about your product or agency work into
+                          parts. Write a few lines about each one. A paragraph
+                          describing feature will be a feature.
+                        </p>
+                      </div>
+                    </Col>
+                    <Col lg="3">
+                      <div className="info">
+                        <div className="icon icon-success">
+                          <i className="tim-icons icon-single-02" />
+                        </div>
+                        <h4 className="info-title">Verified People</h4>
+                        <hr className="line-success" />
+                        <p>
+                          Divide details about your product or agency work into
+                          parts. Write a few lines about each one. A paragraph
+                          describing be enough.
+                        </p>
+                      </div>
+                    </Col>
+                  </Row>
+                </Col>
+              </Row>
+            </Container>
+          </section>
+          <section className="section section-lg section-safe">
+            <Container>
+              <Row className="row-grid justify-content-between">
+                <Col md="5">
+                  <img
+                    alt="..."
+                    className="img-fluid floating"
+                    src={require("assets/img/chester-wade.jpg")}
+                  />
+                  <Card className="card-stats bg-danger">
+                    <CardBody>
+                      <div className="justify-content-center">
+                        <div className="numbers">
+                          <CardTitle tag="p">100%</CardTitle>
+                          <p className="card-category text-white">Safe</p>
+                        </div>
+                      </div>
+                    </CardBody>
+                  </Card>
+                  <Card className="card-stats bg-info">
+                    <CardBody>
+                      <div className="justify-content-center">
+                        <div className="numbers">
+                          <CardTitle tag="p">573 K</CardTitle>
+                          <p className="card-category text-white">
+                            Satisfied customers
+                          </p>
+                        </div>
+                      </div>
+                    </CardBody>
+                  </Card>
+                  <Card className="card-stats bg-default">
+                    <CardBody>
+                      <div className="justify-content-center">
+                        <div className="numbers">
+                          <CardTitle tag="p">10 425</CardTitle>
+                          <p className="card-category text-white">Business</p>
+                        </div>
+                      </div>
+                    </CardBody>
+                  </Card>
+                </Col>
+                <Col md="6">
+                  <div className="px-md-5">
+                    <hr className="line-success" />
+                    <h3>Awesome features</h3>
+                    <p>
+                      The design system comes with three pre-built pages to help
+                      you get started faster. You can change the text and images
+                      and you're good to go.
+                    </p>
+                    <ul className="list-unstyled mt-5">
+                      <li className="py-2">
+                        <div className="d-flex align-items-center">
+                          <div className="icon icon-success mb-2">
+                            <i className="tim-icons icon-vector" />
+                          </div>
+                          <div className="ml-3">
+                            <h6>Carefully crafted components</h6>
+                          </div>
+                        </div>
+                      </li>
+                      <li className="py-2">
+                        <div className="d-flex align-items-center">
+                          <div className="icon icon-success mb-2">
+                            <i className="tim-icons icon-tap-02" />
+                          </div>
+                          <div className="ml-3">
+                            <h6>Amazing page examples</h6>
+                          </div>
+                        </div>
+                      </li>
+                      <li className="py-2">
+                        <div className="d-flex align-items-center">
+                          <div className="icon icon-success mb-2">
+                            <i className="tim-icons icon-single-02" />
+                          </div>
+                          <div className="ml-3">
+                            <h6>Super friendly support team</h6>
+                          </div>
+                        </div>
+                      </li>
+                    </ul>
+                  </div>
+                </Col>
+              </Row>
+            </Container>
+          </section>
         </div>
-        <div className="space-70" />
-        <Row id="checkRadios">
-          <Col lg="3" sm="6">
-            <p className="category">Checkboxes</p>
-            <FormGroup check>
-              <Label check>
-                <Input type="checkbox" />
-                <span className="form-check-sign" />
-                Unchecked
-              </Label>
-            </FormGroup>
-            <FormGroup check>
-              <Label check>
-                <Input defaultChecked type="checkbox" />
-                <span className="form-check-sign" />
-                Checked
-              </Label>
-            </FormGroup>
-            <FormGroup check disabled>
-              <Label check>
-                <Input disabled type="checkbox" />
-                <span className="form-check-sign" />
-                Disabled Unchecked
-              </Label>
-            </FormGroup>
-            <FormGroup check disabled>
-              <Label check>
-                <Input defaultChecked disabled type="checkbox" />
-                <span className="form-check-sign" />
-                Disabled Checked
-              </Label>
-            </FormGroup>
-          </Col>
-          <Col lg="3" sm="6">
-            <p className="category">Radios</p>
-            <FormGroup check className="form-check-radio">
-              <Label check>
-                <Input
-                  defaultValue="option1"
-                  id="exampleRadios1"
-                  name="exampleRadios"
-                  type="radio"
-                />
-                <span className="form-check-sign" />
-                Radio is off
-              </Label>
-            </FormGroup>
-            <FormGroup check className="form-check-radio">
-              <Label check>
-                <Input
-                  defaultChecked
-                  defaultValue="option2"
-                  id="exampleRadios1"
-                  name="exampleRadios"
-                  type="radio"
-                />
-                <span className="form-check-sign" />
-                Radio is on
-              </Label>
-            </FormGroup>
-            <FormGroup check className="form-check-radio" disabled>
-              <Label check>
-                <Input
-                  defaultValue="option3"
-                  disabled
-                  id="exampleRadios2"
-                  name="exampleRadios1"
-                  type="radio"
-                />
-                <span className="form-check-sign" />
-                Disabled radio is off
-              </Label>
-            </FormGroup>
-            <FormGroup check className="form-check-radio" disabled>
-              <Label check>
-                <Input
-                  defaultChecked
-                  defaultValue="option4"
-                  disabled
-                  id="exampleRadios2"
-                  name="exampleRadios1"
-                  type="radio"
-                />
-                <span className="form-check-sign" />
-                Disabled radio is on
-              </Label>
-            </FormGroup>
-          </Col>
-          <Col lg="3" sm="6">
-            <p className="category">Toggle Buttons</p>
-            <CustomInput type="switch" id="switch-1" />
-            <br />
-            <CustomInput type="switch" id="switch-2" label="With label" />
-          </Col>
-          <Col lg="3" sm="6">
-            <p className="category">Sliders</p>
-            <div className="slider" ref={slider1} />
-            <br />
-            <div className="slider slider-info mb-3" ref={slider2} />
-          </Col>
-        </Row>
-      </Container>
-    </div>
+      </div>
+    </>
   );
 }

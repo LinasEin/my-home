@@ -149,7 +149,7 @@ export default function ExamplesNavbar() {
             </NavItem>
             <NavItem>
               <NavLink tag={Link} to="/">
-                Back to Kit
+                Back to Home
               </NavLink>
             </NavItem>
           </Nav>

@@ -40,7 +40,14 @@ import {
   Row,
   Col,
   UncontrolledTooltip,
-  UncontrolledCarousel
+  UncontrolledCarousel,
+  CardFooter,
+  ListGroupItem,
+  ListGroup,
+  DropdownToggle,
+  DropdownMenu,
+  DropdownItem,
+  UncontrolledDropdown,
 } from "reactstrap";
 
 // core components
@@ -51,18 +58,18 @@ const carouselItems = [
   {
     src: require("assets/img/denys.jpg"),
     altText: "Slide 1",
-    caption: "Big City Life, United States"
+    caption: "Big City Life, United States",
   },
   {
     src: require("assets/img/fabien-bazanegue.jpg"),
     altText: "Slide 2",
-    caption: "Somewhere Beyond, United States"
+    caption: "Somewhere Beyond, United States",
   },
   {
     src: require("assets/img/mark-finn.jpg"),
     altText: "Slide 3",
-    caption: "Stocks, United States"
-  }
+    caption: "Stocks, United States",
+  },
 ];
 
 let ps = null;
@@ -107,54 +114,13 @@ export default function ProfilePage() {
           <Container className="align-items-center">
             <Row>
               <Col lg="6" md="6">
-                <h1 className="profile-title text-left">Mike Scheinder</h1>
-                <h5 className="text-on-back">01</h5>
+                <h1 className="profile-title text-left">Anya Taylor-Joy</h1>
+                <h5 className="text-on-back">Profile</h5>
                 <p className="profile-description">
-                  Offices parties lasting outward nothing age few resolve.
-                  Impression to discretion understood to we interested he
-                  excellence. Him remarkably use projection collecting. Going
-                  about eat forty world has round miles.
+                  "Home is where the heart is" - Elvis Presley
                 </p>
-                <div className="btn-wrapper profile pt-3">
-                  <Button
-                    className="btn-icon btn-round"
-                    color="twitter"
-                    href="https://twitter.com/creativetim"
-                    id="tooltip639225725"
-                    target="_blank"
-                  >
-                    <i className="fab fa-twitter" />
-                  </Button>
-                  <UncontrolledTooltip delay={0} target="tooltip639225725">
-                    Follow us
-                  </UncontrolledTooltip>
-                  <Button
-                    className="btn-icon btn-round"
-                    color="facebook"
-                    href="https://www.facebook.com/creativetim"
-                    id="tooltip982846143"
-                    target="_blank"
-                  >
-                    <i className="fab fa-facebook-square" />
-                  </Button>
-                  <UncontrolledTooltip delay={0} target="tooltip982846143">
-                    Like us
-                  </UncontrolledTooltip>
-                  <Button
-                    className="btn-icon btn-round"
-                    color="dribbble"
-                    href="https://dribbble.com/creativetim"
-                    id="tooltip951161185"
-                    target="_blank"
-                  >
-                    <i className="fab fa-dribbble" />
-                  </Button>
-                  <UncontrolledTooltip delay={0} target="tooltip951161185">
-                    Follow us
-                  </UncontrolledTooltip>
-                </div>
               </Col>
-              <Col className="ml-auto mr-auto" lg="4" md="6">
+              <Col className="ml-auto mr-auto" lg="6" md="6">
                 <Card className="card-coin card-plain">
                   <CardHeader>
                     <img
@@ -162,7 +128,7 @@ export default function ProfilePage() {
                       className="img-center img-fluid rounded-circle"
                       src={require("assets/img/mike.jpg")}
                     />
-                    <h4 className="title">Transactions</h4>
+                    <h4 className="title">Your assets</h4>
                   </CardHeader>
                   <CardBody>
                     <Nav
@@ -172,7 +138,7 @@ export default function ProfilePage() {
                       <NavItem>
                         <NavLink
                           className={classnames({
-                            active: tabs === 1
+                            active: tabs === 1,
                           })}
                           onClick={(e) => {
                             e.preventDefault();
@@ -180,13 +146,13 @@ export default function ProfilePage() {
                           }}
                           href="#pablo"
                         >
-                          Wallet
+                          Packages
                         </NavLink>
                       </NavItem>
                       <NavItem>
                         <NavLink
                           className={classnames({
-                            active: tabs === 2
+                            active: tabs === 2,
                           })}
                           onClick={(e) => {
                             e.preventDefault();
@@ -194,13 +160,13 @@ export default function ProfilePage() {
                           }}
                           href="#pablo"
                         >
-                          Send
+                          Buy
                         </NavLink>
                       </NavItem>
                       <NavItem>
                         <NavLink
                           className={classnames({
-                            active: tabs === 3
+                            active: tabs === 3,
                           })}
                           onClick={(e) => {
                             e.preventDefault();
@@ -208,7 +174,7 @@ export default function ProfilePage() {
                           }}
                           href="#pablo"
                         >
-                          News
+                          Recent News
                         </NavLink>
                       </NavItem>
                     </Nav>
@@ -220,24 +186,24 @@ export default function ProfilePage() {
                         <Table className="tablesorter" responsive>
                           <thead className="text-primary">
                             <tr>
-                              <th className="header">COIN</th>
-                              <th className="header">AMOUNT</th>
-                              <th className="header">VALUE</th>
+                              <th className="header">Package</th>
+                              <th className="header">Shares</th>
+                              <th className="header">Value</th>
                             </tr>
                           </thead>
                           <tbody>
                             <tr>
-                              <td>BTC</td>
+                              <td>SKI</td>
                               <td>7.342</td>
                               <td>48,870.75 USD</td>
                             </tr>
                             <tr>
-                              <td>ETH</td>
+                              <td>BEACH</td>
                               <td>30.737</td>
                               <td>64,53.30 USD</td>
                             </tr>
                             <tr>
-                              <td>XRP</td>
+                              <td>FOREST</td>
                               <td>19.242</td>
                               <td>18,354.96 USD</td>
                             </tr>
@@ -276,24 +242,44 @@ export default function ProfilePage() {
                         </Button>
                       </TabPane>
                       <TabPane tabId="tab3">
-                        <Table className="tablesorter" responsive>
-                          <thead className="text-primary">
-                            <tr>
-                              <th className="header">Latest Crypto News</th>
-                            </tr>
-                          </thead>
-                          <tbody>
-                            <tr>
-                              <td>The Daily: Nexo to Pay on Stable...</td>
-                            </tr>
-                            <tr>
-                              <td>Venezuela Begins Public of Nation...</td>
-                            </tr>
-                            <tr>
-                              <td>PR: BitCanna – Dutch Blockchain...</td>
-                            </tr>
-                          </tbody>
-                        </Table>
+                        <div
+                          style={{
+                            maxHeight: "250px",
+                            overflowY: "auto",
+                          }}
+                        >
+                          <Table
+                            className="tablesorter"
+                            responsive
+                            bordered
+                            height="250"
+                          >
+                            <thead className="text-primary">
+                              <tr>
+                                <th className="header">Package</th>
+                                <th className="header">House</th>
+                                <th className="header">Announcement</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              <tr>
+                                <td>SKI</td>
+                                <td>Venice str. 1, Italy</td>
+                                <td>VOTE: Should we replace the main door?</td>
+                              </tr>
+                              <tr>
+                                <td>BEACH</td>
+                                <td>Cool str. 2, Miami</td>
+                                <td>Someone forgot their sunglasses.</td>
+                              </tr>
+                              <tr>
+                                <td>SKI</td>
+                                <td>Innsbruck str. 3, Austria</td>
+                                <td>How to turn the heater on?</td>
+                              </tr>
+                            </tbody>
+                          </Table>
+                        </div>
                       </TabPane>
                     </TabContent>
                   </CardBody>
@@ -302,6 +288,437 @@ export default function ProfilePage() {
             </Row>
           </Container>
         </div>
+        <br />
+        <br />
+        <br />
+        <br />
+        <br />
+        <br />
+        <section className="section">
+          <Container className="align-items-center">
+            <Row>
+              <Col lg="2" md="6">
+                <Card className="card-coin card-plain">
+                  <CardHeader>
+                    <img
+                      alt="..."
+                      className="img-center img-fluid rounded-circle"
+                      src={require("assets/img/etherum.png")}
+                    />
+                    <UncontrolledDropdown nav style={{ listStyle: "none" }}>
+                      <DropdownToggle
+                        caret
+                        color="default"
+                        data-toggle="dropdown"
+                        href="#pablo"
+                        nav
+                        onClick={(e) => e.preventDefault()}
+                      >
+                        <i className="fa fa-cogs d-lg-none d-xl-none" />
+                        Package: SKI
+                      </DropdownToggle>
+                      <DropdownMenu className="dropdown-with-icons">
+                        <DropdownItem href="https://demos.creative-tim.com/blk-design-system-react/#/documentation/overview">
+                          <i className="tim-icons icon-paper" />
+                          BEACH
+                        </DropdownItem>
+                        <DropdownItem>
+                          <i className="tim-icons icon-single-02" />
+                          FOREST
+                        </DropdownItem>
+                      </DropdownMenu>
+                    </UncontrolledDropdown>
+                  </CardHeader>
+                  <CardBody>
+                    <Col>
+                      <Row style={{ justifyContent: "center" }}>
+                        <h4>
+                          <a className="active" href="#">
+                            <u>Discussion</u>
+                          </a>
+                        </h4>
+                      </Row>
+                      <Row style={{ justifyContent: "center" }}>
+                        <a href="#">New proposal</a>
+                      </Row>
+                    </Col>
+                  </CardBody>
+                </Card>
+              </Col>
+              <Col className="ml-auto mr-auto" lg="10" md="6">
+                <Card className="card-coin card-plain">
+                  <div style={{ display: "none" }}>
+                    <CardHeader>
+                      <h4 className="title">New proposal</h4>
+                    </CardHeader>
+                    <CardBody>
+                      <Col lg="12" sm="6">
+                        <Form>
+                          <Row>
+                            <Col md="12">
+                              <FormGroup>
+                                <label>Title</label>
+                                <Input
+                                  placeholder="Enter the title for your proposal/question."
+                                  type="text"
+                                />
+                              </FormGroup>
+                            </Col>
+                          </Row>
+                          <Row>
+                            <Col md="12">
+                              <FormGroup>
+                                <label>Message</label>
+                                <Input
+                                  placeholder="Enter your message here."
+                                  type="text"
+                                />
+                              </FormGroup>
+                            </Col>
+                          </Row>
+                          <Row>
+                            <Col md="12">
+                              <FormGroup check>
+                                <Label check>
+                                  <Input type="checkbox" />
+                                  <span className="form-check-sign" />
+                                  Vote?
+                                </Label>
+                              </FormGroup>
+                            </Col>
+                          </Row>
+                          <Button
+                            className="btn-round float-right"
+                            color="primary"
+                            data-placement="right"
+                            id="tooltip341148792"
+                            type="button"
+                          >
+                            Submit
+                          </Button>
+                          <UncontrolledTooltip
+                            delay={0}
+                            placement="right"
+                            target="tooltip341148792"
+                          >
+                            Can't wait for your message
+                          </UncontrolledTooltip>
+                        </Form>
+                        <FormGroup check></FormGroup>
+                      </Col>
+                    </CardBody>
+                  </div>
+
+                  <div style={{ display: "block" }}>
+                    <CardHeader>
+                      <h4 className="title">Discussion</h4>
+                    </CardHeader>
+                    <div
+                      style={{
+                        maxHeight: "450px",
+                        overflowY: "auto",
+                      }}
+                    >
+                      <CardBody>
+                        <Card className="card-coin card-plain">
+                          <CardBody>
+                            <div
+                              style={{
+                                display: "flex",
+                                justifyContent: "space-between",
+                              }}
+                            >
+                              <span>
+                                <u>User: 0x0904...9859</u>
+                              </span>
+                              <div>
+                                <span>(8 shareholders voted)</span>
+                                <Button
+                                  className="btn-simple btn-round"
+                                  color="success"
+                                  type="button"
+                                  disabled={true}
+                                  style={{ marginLeft: "10px" }}
+                                >
+                                  Open
+                                </Button>
+                              </div>
+                            </div>
+                            <hr />
+                            <h3>[VOTE]: Should we change security system?</h3>
+                            <p>
+                              As you may know, our security cameras are getting
+                              old, perhaps we should consider an upgrade?
+                            </p>
+                            <hr />
+                            <div
+                              style={{
+                                display: "flex",
+                                justifyContent: "space-between",
+                                color: "white",
+                                width: "50%",
+                              }}
+                            >
+                              <Button color="success">For</Button>
+                              <Button color="danger">Against</Button>
+                            </div>
+                          </CardBody>
+                        </Card>
+                        <Card className="card-coin card-plain">
+                          <CardBody>
+                            <div
+                              style={{
+                                display: "flex",
+                                justifyContent: "space-between",
+                              }}
+                            >
+                              <span>
+                                <u>User: 0x0904...9859</u>
+                              </span>
+                              <div>
+                                <span>(8 shareholders voted)</span>
+                                <Button
+                                  className="btn-simple btn-round"
+                                  color="primary"
+                                  type="button"
+                                  disabled={true}
+                                  style={{ marginLeft: "10px" }}
+                                >
+                                  Closed
+                                </Button>
+                              </div>
+                            </div>
+                            <hr />
+                            <h3>[VOTE]: Should we replace the main door?</h3>
+                            <p>
+                              As you may know, there was a big accident last
+                              week and big bear destroyed our front door. We
+                              need to decide..
+                            </p>
+                            <hr />
+                            <div
+                              style={{
+                                display: "flex",
+                                justifyContent: "space-between",
+                                color: "white",
+                                width: "50%",
+                              }}
+                            >
+                              <span>
+                                <i className="tim-icons icon-check-2" />
+                                <u style={{ marginLeft: "20px" }}>For</u>
+                              </span>
+                              <span>91%</span>
+                            </div>
+                            <div
+                              style={{
+                                display: "flex",
+                                justifyContent: "space-between",
+                                // color: "white",
+                                width: "50%",
+                              }}
+                            >
+                              <span>Against</span>
+                              <span>9%</span>
+                            </div>
+                          </CardBody>
+                        </Card>
+                        <Card className="card-coin card-plain">
+                          <CardBody>
+                            <div
+                              style={{
+                                display: "flex",
+                                justifyContent: "space-between",
+                              }}
+                            >
+                              <span>
+                                <u>User: 0x0904...9859</u>
+                              </span>
+                              <div>
+                                <span>(8 shareholders voted)</span>
+                                <Button
+                                  className="btn-simple btn-round"
+                                  color="info"
+                                  type="button"
+                                  disabled={true}
+                                  style={{ marginLeft: "10px" }}
+                                >
+                                  Answered
+                                </Button>
+                              </div>
+                            </div>
+                            <hr />
+                            <h3>How to turn the heater on?</h3>
+                            <hr />
+                            <div
+                              style={{
+                                display: "flex",
+                                justifyContent: "space-between",
+                                color: "white",
+                                width: "40%",
+                              }}
+                            >
+                              <span>
+                                <i className="tim-icons icon-check-2" />
+                                <u style={{ marginLeft: "20px" }}>
+                                  0x0904...9859:
+                                </u>
+                              </span>
+                              <span>Just press the red button!</span>
+                            </div>
+                          </CardBody>
+                        </Card>
+                      </CardBody>
+                    </div>
+                  </div>
+                </Card>
+              </Col>
+            </Row>
+          </Container>
+        </section>
+        <section className="section">
+          <Container>
+            <Row>
+              <Col md="4">
+                <hr className="line-info" />
+                <h1>
+                  Choose the package{" "}
+                  <span className="text-info">that fits your needs</span>
+                </h1>
+              </Col>
+            </Row>
+            <br />
+            <br />
+            <br />
+            <br />
+            <br />
+            <br />
+            <Row>
+              <Col md="4">
+                <Card className="card-coin card-plain">
+                  <CardHeader>
+                    <img
+                      alt="..."
+                      className="img-center img-fluid"
+                      src={require("assets/img/bitcoin.png")}
+                    />
+                  </CardHeader>
+                  <CardBody>
+                    <Row>
+                      <Col className="text-center" md="12">
+                        <h4 className="text-uppercase">Beach</h4>
+                        <span>Package: €6,571,000</span>
+                        <hr className="line-primary" />
+                      </Col>
+                    </Row>
+                    <Row>
+                      <ListGroup>
+                        <ListGroupItem>
+                          House in Miami, USA: €2,625,000
+                        </ListGroupItem>
+                        <ListGroupItem>
+                          House in Spain: €1,323,000
+                        </ListGroupItem>
+                        <ListGroupItem>
+                          House in France: €2,623,000
+                        </ListGroupItem>
+                      </ListGroup>
+                    </Row>
+                  </CardBody>
+                  <CardFooter className="text-center">
+                    <Button
+                      className="btn-simple"
+                      color="primary"
+                      disabled={true}
+                    >
+                      Purchased
+                    </Button>
+                  </CardFooter>
+                </Card>
+              </Col>
+              <Col md="4">
+                <Card className="card-coin card-plain">
+                  <CardHeader>
+                    <img
+                      alt="..."
+                      className="img-center img-fluid"
+                      src={require("assets/img/etherum.png")}
+                    />
+                  </CardHeader>
+                  <CardBody>
+                    <Row>
+                      <Col className="text-center" md="12">
+                        <h4 className="text-uppercase">SKI</h4>
+                        <span>Package: €6,271,000</span>
+                        <hr className="line-success" />
+                      </Col>
+                    </Row>
+                    <Row>
+                      <ListGroup>
+                        <ListGroupItem>
+                          House in Bergamo, Italy: €2,025,000
+                        </ListGroupItem>
+                        <ListGroupItem>
+                          House in Inssbruk, Austria: €623,000
+                        </ListGroupItem>
+                        <ListGroupItem>
+                          House in Zürich, Switzerland: €3,623,000
+                        </ListGroupItem>
+                      </ListGroup>
+                    </Row>
+                  </CardBody>
+                  <CardFooter className="text-center">
+                    <Button
+                      className="btn-simple"
+                      color="success"
+                      disabled={true}
+                    >
+                      Purchased
+                    </Button>
+                  </CardFooter>
+                </Card>
+              </Col>
+              <Col md="4">
+                <Card className="card-coin card-plain">
+                  <CardHeader>
+                    <img
+                      alt="..."
+                      className="img-center img-fluid"
+                      src={require("assets/img/ripp.png")}
+                    />
+                  </CardHeader>
+                  <CardBody>
+                    <Row>
+                      <Col className="text-center" md="12">
+                        <h4 className="text-uppercase">FOREST</h4>
+                        <span>Package: €1,571,000</span>
+                        <hr className="line-info" />
+                      </Col>
+                    </Row>
+                    <Row>
+                      <ListGroup>
+                        <ListGroupItem>
+                          House in Finland: €625,000
+                        </ListGroupItem>
+                        <ListGroupItem>
+                          House in Bosnia and Herzegovina: €323,000
+                        </ListGroupItem>
+                        <ListGroupItem>
+                          House in Hungary: €623,000
+                        </ListGroupItem>
+                      </ListGroup>
+                    </Row>
+                  </CardBody>
+                  <CardFooter className="text-center">
+                    <Button className="btn-simple" color="info" disabled={true}>
+                      Purchased
+                    </Button>
+                  </CardFooter>
+                </Card>
+              </Col>
+            </Row>
+          </Container>
+        </section>
         <div className="section">
           <Container>
             <Row className="justify-content-between">
@@ -311,14 +728,14 @@ export default function ProfilePage() {
                 </Row>
               </Col>
               <Col md="5">
-                <h1 className="profile-title text-left">Projects</h1>
-                <h5 className="text-on-back">02</h5>
+                <h1 className="profile-title text-left">
+                  Your past experiences
+                </h1>
+                <h5 className="text-on-back">Frame</h5>
                 <p className="profile-description text-left">
-                  An artist of considerable range, Ryan — the name taken by
-                  Melbourne-raised, Brooklyn-based Nick Murphy — writes,
-                  performs and records all of his own music, giving it a warm,
-                  intimate feel with a solid groove structure. An artist of
-                  considerable range.
+                  Do not forget to take pictures! Enjoy your life and capture
+                  the moment to remember. Here are some of your best moments
+                  from previous stay.
                 </p>
                 <div className="btn-wrapper pt-3">
                   <Button
@@ -349,7 +766,7 @@ export default function ProfilePage() {
                 <Card className="card-plain">
                   <CardHeader>
                     <h1 className="profile-title text-left">Contact</h1>
-                    <h5 className="text-on-back">03</h5>
+                    <h5 className="text-on-back">Issue?</h5>
                   </CardHeader>
                   <CardBody>
                     <Form>
@@ -440,6 +857,7 @@ export default function ProfilePage() {
             </Row>
           </Container>
         </section>
+
         <Footer />
       </div>
     </>

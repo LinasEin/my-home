@@ -40,29 +40,10 @@ export default function Footer() {
           <Col md="3">
             <Nav>
               <NavItem>
-                <NavLink to="/" tag={Link}>
-                  Home
-                </NavLink>
-              </NavItem>
-              <NavItem>
-                <NavLink to="/landing-page" tag={Link}>
-                  Landing
-                </NavLink>
-              </NavItem>
-              <NavItem>
-                <NavLink to="/register-page" tag={Link}>
-                  Register
-                </NavLink>
-              </NavItem>
-              <NavItem>
                 <NavLink to="/profile-page" tag={Link}>
                   Profile
                 </NavLink>
               </NavItem>
-            </Nav>
-          </Col>
-          <Col md="3">
-            <Nav>
               <NavItem>
                 <NavLink href="https://creative-tim.com/contact-us?ref=blkdsr-footer">
                   Contact Us
@@ -73,6 +54,10 @@ export default function Footer() {
                   About Us
                 </NavLink>
               </NavItem>
+            </Nav>
+          </Col>
+          <Col md="3">
+            <Nav>
               <NavItem>
                 <NavLink href="https://creative-tim.com/blog?ref=blkdsr-footer">
                   Blog

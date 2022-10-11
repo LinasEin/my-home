@@ -48,9 +48,9 @@ export default function Index() {
       <IndexNavbar />
       <div className="wrapper">
         <PageHeader />
-        {/* <div className="main">
+        <div className="main">
           <Basics />
-          <Navbars />
+          {/* <Navbars />
           <Tabs />
           <Pagination />
           <Notifications />
@@ -59,8 +59,8 @@ export default function Index() {
           <NucleoIcons />
           <Signup />
           <Examples />
-          <Download />
-        </div> */}
+          <Download /> */}
+        </div>
         <Footer />
       </div>
     </>
