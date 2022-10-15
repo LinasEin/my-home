@@ -19,6 +19,8 @@ import React from "react";
 import classnames from "classnames";
 // javascript plugin used to create scrollbars on windows
 import PerfectScrollbar from "perfect-scrollbar";
+import { ethers } from "ethers";
+import myHomesAbi from "../../myHomesABI.json";
 // reactstrap components
 import {
   Button,
@@ -44,10 +46,6 @@ import {
   CardFooter,
   ListGroupItem,
   ListGroup,
-  DropdownToggle,
-  DropdownMenu,
-  DropdownItem,
-  UncontrolledDropdown,
 } from "reactstrap";
 
 // core components
@@ -72,11 +70,151 @@ const carouselItems = [
   },
 ];
 
+const ballotStates = [
+  { name: "Created", color: "info", option: "Start Voting" },
+  { name: "Voting", color: "success", option: "End Voting" },
+  { name: "Ended", color: "dange", option: "Voting ended" },
+];
+
 let ps = null;
+
+// SKI, BEACH, FOREST
+const smartContracts = [
+  "0x129F5dc1f5B4F3D7272952a3e0EfD25E2868841B",
+  "0xF5a1fa68736085BC2A2Fc570C81D2a59E332fdf2",
+  "0x88C9891DC3DAb365B137303f2Fcd5cdD343944D7",
+];
 
 export default function ProfilePage() {
   const [tabs, setTabs] = React.useState(1);
+  const [user, setUser] = React.useState("");
+  const [userBalance, setUserWeiBalance] = React.useState(0);
+  const [ashares, setAShares] = React.useState(0);
+  const [packageToBuy, setPackageToBuy] = React.useState("");
+  const [amountToBuy, setAmountToBuy] = React.useState(0);
+  const [packageToVote, setPackageToVote] = React.useState("");
+  const [proposal, setProposal] = React.useState("");
+  const [discussionTabs, setDiscussionTabs] = React.useState(2);
+  const [housingPackages, setHousingPackages] = React.useState([]);
+
+  const loadData = async () => {
+    let loadedUser;
+    if (window.ethereum) {
+      await window.ethereum
+        .request({ method: "eth_requestAccounts" })
+        .then((result) => {
+          loadedUser = result;
+        });
+    }
+    const provider = new ethers.providers.Web3Provider(window.ethereum);
+
+    const r = await Promise.all(
+      smartContracts.map(async (contract) => {
+        const mhpackage = new ethers.Contract(
+          contract,
+          myHomesAbi,
+          provider.getSigner()
+        );
+
+        const housingPackage = await mhpackage.hp();
+        const balance = await mhpackage.balances(
+          ethers.utils.getAddress(loadedUser[0])
+        );
+
+        const userWeiBalance = await mhpackage.etherBalance(
+          ethers.utils.getAddress(loadedUser[0])
+        );
+        setUserWeiBalance(parseInt(userWeiBalance));
+
+        const owner = await mhpackage.owner();
+        const ownerBalance = await mhpackage.balances(
+          ethers.utils.getAddress(owner)
+        );
+
+        let houses;
+        let totalHouses = await mhpackage.totalHouses();
+        totalHouses = parseInt(totalHouses);
+        if (totalHouses !== 0) {
+          const houseIdxArray = [...Array(totalHouses).keys()];
+          houses = await Promise.all(
+            houseIdxArray.map(async (idx) => await mhpackage.houseRegister(idx))
+          );
+        }
+
+        let ballots;
+        let totalBallots = await mhpackage.totalBallots();
+        totalBallots = parseInt(totalBallots);
+        if (totalBallots !== 0) {
+          const ballotIdxArray = [...Array(totalBallots).keys()];
+          ballots = await Promise.all(
+            ballotIdxArray
+              .map(async (idx) => await mhpackage.ballotHistory(idx))
+              .filter(
+                (ballot) =>
+                  ballot &&
+                  ethers.utils.getAddress(ballot["ballotOwner"]) !==
+                    ethers.utils.getAddress(
+                      "0x0000000000000000000000000000000000000000"
+                    )
+              )
+          );
+        }
+
+        const currentBallot = await mhpackage.currentBallot();
+        if (
+          currentBallot &&
+          currentBallot["state"] !== 3 &&
+          ethers.utils.getAddress(currentBallot["ballotOwner"]) !==
+            ethers.utils.getAddress(
+              "0x0000000000000000000000000000000000000000"
+            )
+        ) {
+          ballots = [currentBallot].concat(ballots);
+        }
+
+        const decimalTotalValue = parseInt(
+          housingPackage["totalValue"]["_hex"]
+        );
+
+        const totalValue = decimalTotalValue.toLocaleString("dk-DK", {
+          style: "currency",
+          currencyDisplay: "code",
+          currency: "EUR",
+        });
+
+        const decimalBalance = parseInt(balance["_hex"]);
+        const value = (
+          (decimalBalance * decimalTotalValue) /
+          100
+        ).toLocaleString("dk-DK", {
+          style: "currency",
+          currencyDisplay: "code",
+          currency: "EUR",
+        });
+
+        return {
+          name: housingPackage["name"],
+          package: housingPackage["package"],
+          balance: parseInt(balance),
+          totalValue: totalValue,
+          availableShares: parseInt(ownerBalance),
+          houses: houses,
+          value: value,
+          ballots: ballots,
+          mhpackage: mhpackage,
+        };
+      })
+    );
+
+    setUser(loadedUser[0]);
+    setAShares(r[0]["availableShares"]);
+    setHousingPackages(r);
+    setPackageToVote(r[0]["name"]);
+    setPackageToBuy(r[0]["name"]);
+  };
+
   React.useEffect(() => {
+    loadData();
     if (navigator.platform.indexOf("Win") > -1) {
       document.documentElement.className += " perfect-scrollbar-on";
       document.documentElement.classList.remove("perfect-scrollbar-off");
@@ -96,6 +234,18 @@ export default function ProfilePage() {
       document.body.classList.toggle("profile-page");
     };
   }, []);
+
+  const packageTable = housingPackages.map((hp) => {
+    return (
+      <tr key={hp["name"]}>
+        <td>{hp["name"]}</td>
+        <td>{hp["balance"]}</td>
+        <td>{hp["value"]}</td>
+        <td>{hp["totalValue"]}</td>
+      </tr>
+    );
+  });
+
   return (
     <>
       <ExamplesNavbar />
@@ -174,7 +324,7 @@ export default function ProfilePage() {
                           }}
                           href="#pablo"
                         >
-                          Recent News
+                          Sell
                         </NavLink>
                       </NavItem>
                     </Nav>
@@ -189,39 +339,57 @@ export default function ProfilePage() {
                               <th className="header">Package</th>
                               <th className="header">Shares</th>
                               <th className="header">Value</th>
+                              <th className="header">Total Value</th>
                             </tr>
                           </thead>
-                          <tbody>
-                            <tr>
-                              <td>SKI</td>
-                              <td>7.342</td>
-                              <td>48,870.75 USD</td>
-                            </tr>
-                            <tr>
-                              <td>BEACH</td>
-                              <td>30.737</td>
-                              <td>64,53.30 USD</td>
-                            </tr>
-                            <tr>
-                              <td>FOREST</td>
-                              <td>19.242</td>
-                              <td>18,354.96 USD</td>
-                            </tr>
-                          </tbody>
+                          <tbody>{packageTable}</tbody>
                         </Table>
                       </TabPane>
                       <TabPane tabId="tab2">
                         <Row>
-                          <Label sm="3">Pay to</Label>
+                          <Label sm="3">Your balance:</Label>
                           <Col sm="9">
                             <FormGroup>
-                              <Input
-                                placeholder="e.g. 1Nasd92348hU984353hfid"
-                                type="text"
-                              />
-                              <FormText color="default" tag="span">
-                                Please enter a valid address.
-                              </FormText>
+                              <Input type="text" disabled value={userBalance} />
+                            </FormGroup>
+                          </Col>
+                        </Row>
+                        <Row>
+                          <Label sm="3">Package</Label>
+                          <Col sm="9">
+                            <FormGroup>
+                              <FormGroup>
+                                <Input
+                                  type="select"
+                                  name="select"
+                                  id="select"
+                                  value={ashares}
+                                  onChange={(e) => {
+                                    const res = housingPackages.filter((hp) => {
+                                      return hp["name"] === e.target.value;
+                                    });
+
+                                    setPackageToBuy(res[0]);
+                                    setAShares(res[0]["availableShares"]);
+                                  }}
+                                >
+                                  {housingPackages.map((hp) => {
+                                    return (
+                                      <option key={hp["name"]}>
+                                        {hp["name"]}
+                                      </option>
+                                    );
+                                  })}
+                                </Input>
+                              </FormGroup>
+                            </FormGroup>
+                          </Col>
+                        </Row>
+                        <Row>
+                          <Label sm="3">Available shares:</Label>
+                          <Col sm="9">
+                            <FormGroup>
+                              <Input type="text" disabled value={ashares} />
                             </FormGroup>
                           </Col>
                         </Row>
@@ -229,7 +397,14 @@ export default function ProfilePage() {
                           <Label sm="3">Amount</Label>
                           <Col sm="9">
                             <FormGroup>
-                              <Input placeholder="1.587" type="text" />
+                              <Input
+                                value={amountToBuy}
+                                onChange={(e) => {
+                                  e.preventDefault();
+                                  setAmountToBuy(e.target.value);
+                                }}
+                                type="text"
+                              />
                             </FormGroup>
                           </Col>
                         </Row>
@@ -237,49 +412,98 @@ export default function ProfilePage() {
                           className="btn-simple btn-icon btn-round float-right"
                           color="primary"
                           type="submit"
+                          onClick={(e) => {
+                            e.preventDefault();
+                            const hpackage = housingPackages.filter(
+                              (hp) => hp["name"] === packageToBuy
+                            )[0];
+                            hpackage["mhpackage"].buy(amountToBuy);
+                          }}
                         >
                           <i className="tim-icons icon-send" />
                         </Button>
                       </TabPane>
                       <TabPane tabId="tab3">
-                        <div
-                          style={{
-                            maxHeight: "250px",
-                            overflowY: "auto",
+                        <Row>
+                          <Label sm="3">Package</Label>
+                          <Col sm="9">
+                            <FormGroup>
+                              <FormGroup>
+                                <Input
+                                  type="select"
+                                  name="select"
+                                  id="select"
+                                  value={ashares}
+                                  onChange={(e) => {
+                                    const res = housingPackages.filter((hp) => {
+                                      return hp["name"] === e.target.value;
+                                    });
+
+                                    setPackageToBuy(res[0]);
+                                    setAShares(res[0]["availableShares"]);
+                                  }}
+                                >
+                                  {housingPackages.map((hp) => {
+                                    return (
+                                      <option key={hp["name"]}>
+                                        {hp["name"]}
+                                      </option>
+                                    );
+                                  })}
+                                </Input>
+                              </FormGroup>
+                            </FormGroup>
+                          </Col>
+                        </Row>
+                        <Row>
+                          <Label sm="3">Your balance:</Label>
+                          <Col sm="9">
+                            <FormGroup>
+                              <Input
+                                type="text"
+                                disabled
+                                value={
+                                  housingPackages.filter((hp) => {
+                                    return hp["name"] === packageToBuy;
+                                  })[0]
+                                    ? housingPackages.filter((hp) => {
+                                        return hp["name"] === packageToBuy;
+                                      })[0]["balance"]
+                                    : 0
+                                }
+                              />
+                            </FormGroup>
+                          </Col>
+                        </Row>
+                        <Row>
+                          <Label sm="3">Amount</Label>
+                          <Col sm="9">
+                            <FormGroup>
+                              <Input
+                                value={amountToBuy}
+                                onChange={(e) => {
+                                  e.preventDefault();
+                                  setAmountToBuy(e.target.value);
+                                }}
+                                type="text"
+                              />
+                            </FormGroup>
+                          </Col>
+                        </Row>
+                        <Button
+                          className="btn-simple btn-icon btn-round float-right"
+                          color="primary"
+                          type="submit"
+                          onClick={(e) => {
+                            e.preventDefault();
+                            const hpackage = housingPackages.filter(
+                              (hp) => hp["name"] === packageToBuy
+                            )[0];
+                            hpackage["mhpackage"].sellToOwner(amountToBuy);
                           }}
                         >
-                          <Table
-                            className="tablesorter"
-                            responsive
-                            bordered
-                            height="250"
-                          >
-                            <thead className="text-primary">
-                              <tr>
-                                <th className="header">Package</th>
-                                <th className="header">House</th>
-                                <th className="header">Announcement</th>
-                              </tr>
-                            </thead>
-                            <tbody>
-                              <tr>
-                                <td>SKI</td>
-                                <td>Venice str. 1, Italy</td>
-                                <td>VOTE: Should we replace the main door?</td>
-                              </tr>
-                              <tr>
-                                <td>BEACH</td>
-                                <td>Cool str. 2, Miami</td>
-                                <td>Someone forgot their sunglasses.</td>
-                              </tr>
-                              <tr>
-                                <td>SKI</td>
-                                <td>Innsbruck str. 3, Austria</td>
-                                <td>How to turn the heater on?</td>
-                              </tr>
-                            </tbody>
-                          </Table>
-                        </div>
+                          <i className="tim-icons icon-send" />
+                        </Button>
                       </TabPane>
                     </TabContent>
                   </CardBody>
@@ -305,272 +529,275 @@ export default function ProfilePage() {
                       className="img-center img-fluid rounded-circle"
                       src={require("assets/img/etherum.png")}
                     />
-                    <UncontrolledDropdown nav style={{ listStyle: "none" }}>
-                      <DropdownToggle
-                        caret
-                        color="default"
-                        data-toggle="dropdown"
-                        href="#pablo"
-                        nav
-                        onClick={(e) => e.preventDefault()}
-                      >
-                        <i className="fa fa-cogs d-lg-none d-xl-none" />
-                        Package: SKI
-                      </DropdownToggle>
-                      <DropdownMenu className="dropdown-with-icons">
-                        <DropdownItem href="https://demos.creative-tim.com/blk-design-system-react/#/documentation/overview">
-                          <i className="tim-icons icon-paper" />
-                          BEACH
-                        </DropdownItem>
-                        <DropdownItem>
-                          <i className="tim-icons icon-single-02" />
-                          FOREST
-                        </DropdownItem>
-                      </DropdownMenu>
-                    </UncontrolledDropdown>
+                    <Input
+                      type="select"
+                      name="select"
+                      id="select"
+                      value={packageToVote}
+                      onChange={(e) => {
+                        const res = housingPackages.filter((hp) => {
+                          return hp["name"] === e.target.value;
+                        });
+
+                        setPackageToVote(res[0]["name"]);
+                      }}
+                    >
+                      {housingPackages.map((hp) => {
+                        return <option key={hp["name"]}>{hp["name"]}</option>;
+                      })}
+                    </Input>
                   </CardHeader>
                   <CardBody>
-                    <Col>
-                      <Row style={{ justifyContent: "center" }}>
-                        <h4>
-                          <a className="active" href="#">
-                            <u>Discussion</u>
-                          </a>
-                        </h4>
-                      </Row>
-                      <Row style={{ justifyContent: "center" }}>
-                        <a href="#">New proposal</a>
-                      </Row>
-                    </Col>
+                    <Nav
+                      className="nav-tabs-primary justify-content-center"
+                      tabs
+                    >
+                      <NavItem>
+                        <NavLink
+                          className={classnames({
+                            active: discussionTabs === 2,
+                          })}
+                          onClick={(e) => {
+                            e.preventDefault();
+                            setDiscussionTabs(2);
+                          }}
+                          href="#pablo"
+                        >
+                          Discussion
+                        </NavLink>
+                      </NavItem>
+                      <NavItem>
+                        <NavLink
+                          className={classnames({
+                            active: discussionTabs === 1,
+                          })}
+                          onClick={(e) => {
+                            e.preventDefault();
+                            setDiscussionTabs(1);
+                          }}
+                          href="#pablo"
+                        >
+                          New proposal
+                        </NavLink>
+                      </NavItem>
+                    </Nav>
                   </CardBody>
                 </Card>
               </Col>
               <Col className="ml-auto mr-auto" lg="10" md="6">
                 <Card className="card-coin card-plain">
-                  <div style={{ display: "none" }}>
-                    <CardHeader>
-                      <h4 className="title">New proposal</h4>
-                    </CardHeader>
-                    <CardBody>
-                      <Col lg="12" sm="6">
-                        <Form>
-                          <Row>
-                            <Col md="12">
-                              <FormGroup>
-                                <label>Title</label>
-                                <Input
-                                  placeholder="Enter the title for your proposal/question."
-                                  type="text"
-                                />
-                              </FormGroup>
-                            </Col>
-                          </Row>
-                          <Row>
-                            <Col md="12">
-                              <FormGroup>
-                                <label>Message</label>
-                                <Input
-                                  placeholder="Enter your message here."
-                                  type="text"
-                                />
-                              </FormGroup>
-                            </Col>
-                          </Row>
-                          <Row>
-                            <Col md="12">
-                              <FormGroup check>
-                                <Label check>
-                                  <Input type="checkbox" />
-                                  <span className="form-check-sign" />
-                                  Vote?
-                                </Label>
-                              </FormGroup>
-                            </Col>
-                          </Row>
-                          <Button
-                            className="btn-round float-right"
-                            color="primary"
-                            data-placement="right"
-                            id="tooltip341148792"
-                            type="button"
-                          >
-                            Submit
-                          </Button>
-                          <UncontrolledTooltip
-                            delay={0}
-                            placement="right"
-                            target="tooltip341148792"
-                          >
-                            Can't wait for your message
-                          </UncontrolledTooltip>
-                        </Form>
-                        <FormGroup check></FormGroup>
-                      </Col>
-                    </CardBody>
-                  </div>
-
-                  <div style={{ display: "block" }}>
-                    <CardHeader>
-                      <h4 className="title">Discussion</h4>
-                    </CardHeader>
-                    <div
-                      style={{
-                        maxHeight: "450px",
-                        overflowY: "auto",
-                      }}
-                    >
+                  <TabContent
+                    className="tab-subcategories"
+                    activeTab={"dtab" + discussionTabs}
+                  >
+                    <TabPane tabId="dtab1">
+                      <CardHeader>
+                        <h4 className="title">New proposal</h4>
+                      </CardHeader>
                       <CardBody>
-                        <Card className="card-coin card-plain">
-                          <CardBody>
-                            <div
-                              style={{
-                                display: "flex",
-                                justifyContent: "space-between",
+                        <Col lg="12" sm="6">
+                          <Form>
+                            <Row>
+                              <Col md="12">
+                                <FormGroup>
+                                  <label>Proposal</label>
+                                  <Input
+                                    placeholder="Enter your proposal."
+                                    value={proposal}
+                                    type="text"
+                                    onChange={(e) => {
+                                      setProposal(e.target.value);
+                                    }}
+                                  />
+                                </FormGroup>
+                              </Col>
+                            </Row>
+                            <Button
+                              className="btn-round float-right"
+                              color="primary"
+                              data-placement="right"
+                              // id="tooltip341148792"
+                              type="button"
+                              onClick={(e) => {
+                                e.preventDefault();
+                                const hp = housingPackages.filter(
+                                  (p) => p["name"] === packageToVote
+                                )[0];
+                                hp["mhpackage"].createBallot(proposal);
                               }}
                             >
-                              <span>
-                                <u>User: 0x0904...9859</u>
-                              </span>
-                              <div>
-                                <span>(8 shareholders voted)</span>
-                                <Button
-                                  className="btn-simple btn-round"
-                                  color="success"
-                                  type="button"
-                                  disabled={true}
-                                  style={{ marginLeft: "10px" }}
-                                >
-                                  Open
-                                </Button>
-                              </div>
-                            </div>
-                            <hr />
-                            <h3>[VOTE]: Should we change security system?</h3>
-                            <p>
-                              As you may know, our security cameras are getting
-                              old, perhaps we should consider an upgrade?
-                            </p>
-                            <hr />
-                            <div
-                              style={{
-                                display: "flex",
-                                justifyContent: "space-between",
-                                color: "white",
-                                width: "50%",
-                              }}
-                            >
-                              <Button color="success">For</Button>
-                              <Button color="danger">Against</Button>
-                            </div>
-                          </CardBody>
-                        </Card>
-                        <Card className="card-coin card-plain">
-                          <CardBody>
-                            <div
-                              style={{
-                                display: "flex",
-                                justifyContent: "space-between",
-                              }}
-                            >
-                              <span>
-                                <u>User: 0x0904...9859</u>
-                              </span>
-                              <div>
-                                <span>(8 shareholders voted)</span>
-                                <Button
-                                  className="btn-simple btn-round"
-                                  color="primary"
-                                  type="button"
-                                  disabled={true}
-                                  style={{ marginLeft: "10px" }}
-                                >
-                                  Closed
-                                </Button>
-                              </div>
-                            </div>
-                            <hr />
-                            <h3>[VOTE]: Should we replace the main door?</h3>
-                            <p>
-                              As you may know, there was a big accident last
-                              week and big bear destroyed our front door. We
-                              need to decide..
-                            </p>
-                            <hr />
-                            <div
-                              style={{
-                                display: "flex",
-                                justifyContent: "space-between",
-                                color: "white",
-                                width: "50%",
-                              }}
-                            >
-                              <span>
-                                <i className="tim-icons icon-check-2" />
-                                <u style={{ marginLeft: "20px" }}>For</u>
-                              </span>
-                              <span>91%</span>
-                            </div>
-                            <div
-                              style={{
-                                display: "flex",
-                                justifyContent: "space-between",
-                                // color: "white",
-                                width: "50%",
-                              }}
-                            >
-                              <span>Against</span>
-                              <span>9%</span>
-                            </div>
-                          </CardBody>
-                        </Card>
-                        <Card className="card-coin card-plain">
-                          <CardBody>
-                            <div
-                              style={{
-                                display: "flex",
-                                justifyContent: "space-between",
-                              }}
-                            >
-                              <span>
-                                <u>User: 0x0904...9859</u>
-                              </span>
-                              <div>
-                                <span>(8 shareholders voted)</span>
-                                <Button
-                                  className="btn-simple btn-round"
-                                  color="info"
-                                  type="button"
-                                  disabled={true}
-                                  style={{ marginLeft: "10px" }}
-                                >
-                                  Answered
-                                </Button>
-                              </div>
-                            </div>
-                            <hr />
-                            <h3>How to turn the heater on?</h3>
-                            <hr />
-                            <div
-                              style={{
-                                display: "flex",
-                                justifyContent: "space-between",
-                                color: "white",
-                                width: "40%",
-                              }}
-                            >
-                              <span>
-                                <i className="tim-icons icon-check-2" />
-                                <u style={{ marginLeft: "20px" }}>
-                                  0x0904...9859:
-                                </u>
-                              </span>
-                              <span>Just press the red button!</span>
-                            </div>
-                          </CardBody>
-                        </Card>
+                              Submit
+                            </Button>
+                          </Form>
+                        </Col>
                       </CardBody>
-                    </div>
-                  </div>
+                    </TabPane>
+                    <TabPane tabId="dtab2">
+                      <CardHeader>
+                        <h4 className="title">Discussion</h4>
+                      </CardHeader>
+                      <div
+                        style={{
+                          maxHeight: "450px",
+                          overflowY: "auto",
+                        }}
+                      >
+                        <CardBody>
+                          {housingPackages
+                            .filter((hp) => hp["name"] === packageToVote)
+                            .map((hp) => {
+                              if (!hp["ballots"]) {
+                                return "No ballots yet!";
+                              } else
+                                return hp["ballots"].map((b) => {
+                                  if (b === undefined) return b;
+                                  return (
+                                    <Card
+                                      className="card-coin card-plain"
+                                      key={hp["name"]}
+                                    >
+                                      <CardBody key={b["proposal"]}>
+                                        <div
+                                          style={{
+                                            display: "flex",
+                                            justifyContent: "space-between",
+                                          }}
+                                        >
+                                          <span>
+                                            <u>User: {b["ballotOwner"]}</u>
+                                          </span>
+                                          <div>
+                                            <span>
+                                              ({parseInt(b["totalVotes"])}{" "}
+                                              shareholders voted)
+                                            </span>
+                                            <Button
+                                              className="btn-simple btn-round"
+                                              color={
+                                                ballotStates[b["state"]][
+                                                  "color"
+                                                ]
+                                              }
+                                              type="button"
+                                              disabled={true}
+                                              style={{ marginLeft: "10px" }}
+                                            >
+                                              {ballotStates[b["state"]]["name"]}
+                                            </Button>
+                                          </div>
+                                        </div>
+                                        <hr />
+                                        <h3>[VOTE]: {b["proposal"]}</h3>
+                                        <hr />
+                                        {b["state"] !== 2 ? (
+                                          <div
+                                            style={{
+                                              display: "flex",
+                                              justifyContent: "space-between",
+                                              color: "white",
+                                              width: "55%",
+                                            }}
+                                          >
+                                            <Button
+                                              color="success"
+                                              disabled={hp["balance"] === 0}
+                                              onClick={(e) => {
+                                                e.preventDefault();
+                                                hp["mhpackage"].doVote(true);
+                                              }}
+                                            >
+                                              For
+                                            </Button>
+                                            <Button
+                                              disabled={hp["balance"] === 0}
+                                              color="danger"
+                                              onClick={(e) => {
+                                                e.preventDefault();
+                                                hp["mhpackage"].doVote(false);
+                                              }}
+                                            >
+                                              Against
+                                            </Button>
+                                            {ethers.utils.getAddress(
+                                              b["ballotOwner"]
+                                            ) ===
+                                            ethers.utils.getAddress(user) ? (
+                                              <Button
+                                                color="info"
+                                                onClick={(e) => {
+                                                  e.preventDefault();
+                                                  if (b["state"] === 0) {
+                                                    hp["mhpackage"].startVote();
+                                                  } else {
+                                                    hp["mhpackage"].endVote();
+                                                  }
+                                                }}
+                                              >
+                                                {
+                                                  ballotStates[b["state"]][
+                                                    "option"
+                                                  ]
+                                                }
+                                              </Button>
+                                            ) : undefined}
+                                          </div>
+                                        ) : (
+                                          <>
+                                            <div
+                                              style={{
+                                                display: "flex",
+                                                justifyContent: "space-between",
+                                                // color: "white",
+                                                width: "50%",
+                                              }}
+                                            >
+                                              <span>For</span>
+                                              <span>
+                                                {parseInt(b["totalVotes"]) > 0
+                                                  ? (parseInt(
+                                                      b["finalResult"]
+                                                    ) *
+                                                      100) /
+                                                    parseInt(b["totalVotes"])
+                                                  : "0"}
+                                                %
+                                              </span>
+                                            </div>
+                                            <div
+                                              style={{
+                                                display: "flex",
+                                                justifyContent: "space-between",
+                                                // color: "white",
+                                                width: "50%",
+                                              }}
+                                            >
+                                              <span>Against</span>
+                                              <span>
+                                                {parseInt(b["totalVotes"]) > 0
+                                                  ? 100 -
+                                                    (parseInt(
+                                                      b["finalResult"]
+                                                    ) *
+                                                      100) /
+                                                      parseInt(b["totalVotes"])
+                                                  : "0"}{" "}
+                                                %
+                                              </span>
+                                            </div>
+                                          </>
+                                        )}
+                                      </CardBody>
+                                    </Card>
+                                  );
+                                });
+                            })}
+                        </CardBody>
+                      </div>
+                    </TabPane>
+                  </TabContent>
+                  <div style={{ display: "none" }}></div>
+
+                  <div style={{ display: "block" }}></div>
                 </Card>
               </Col>
             </Row>
@@ -594,128 +821,58 @@ export default function ProfilePage() {
             <br />
             <br />
             <Row>
-              <Col md="4">
-                <Card className="card-coin card-plain">
-                  <CardHeader>
-                    <img
-                      alt="..."
-                      className="img-center img-fluid"
-                      src={require("assets/img/bitcoin.png")}
-                    />
-                  </CardHeader>
-                  <CardBody>
-                    <Row>
-                      <Col className="text-center" md="12">
-                        <h4 className="text-uppercase">Beach</h4>
-                        <span>Package: €6,571,000</span>
-                        <hr className="line-primary" />
-                      </Col>
-                    </Row>
-                    <Row>
-                      <ListGroup>
-                        <ListGroupItem>
-                          House in Miami, USA: €2,625,000
-                        </ListGroupItem>
-                        <ListGroupItem>
-                          House in Spain: €1,323,000
-                        </ListGroupItem>
-                        <ListGroupItem>
-                          House in France: €2,623,000
-                        </ListGroupItem>
-                      </ListGroup>
-                    </Row>
-                  </CardBody>
-                  <CardFooter className="text-center">
-                    <Button
-                      className="btn-simple"
-                      color="primary"
-                      disabled={true}
-                    >
-                      Purchased
-                    </Button>
-                  </CardFooter>
-                </Card>
-              </Col>
-              <Col md="4">
-                <Card className="card-coin card-plain">
-                  <CardHeader>
-                    <img
-                      alt="..."
-                      className="img-center img-fluid"
-                      src={require("assets/img/etherum.png")}
-                    />
-                  </CardHeader>
-                  <CardBody>
-                    <Row>
-                      <Col className="text-center" md="12">
-                        <h4 className="text-uppercase">SKI</h4>
-                        <span>Package: €6,271,000</span>
-                        <hr className="line-success" />
-                      </Col>
-                    </Row>
-                    <Row>
-                      <ListGroup>
-                        <ListGroupItem>
-                          House in Bergamo, Italy: €2,025,000
-                        </ListGroupItem>
-                        <ListGroupItem>
-                          House in Inssbruk, Austria: €623,000
-                        </ListGroupItem>
-                        <ListGroupItem>
-                          House in Zürich, Switzerland: €3,623,000
-                        </ListGroupItem>
-                      </ListGroup>
-                    </Row>
-                  </CardBody>
-                  <CardFooter className="text-center">
-                    <Button
-                      className="btn-simple"
-                      color="success"
-                      disabled={true}
-                    >
-                      Purchased
-                    </Button>
-                  </CardFooter>
-                </Card>
-              </Col>
-              <Col md="4">
-                <Card className="card-coin card-plain">
-                  <CardHeader>
-                    <img
-                      alt="..."
-                      className="img-center img-fluid"
-                      src={require("assets/img/ripp.png")}
-                    />
-                  </CardHeader>
-                  <CardBody>
-                    <Row>
-                      <Col className="text-center" md="12">
-                        <h4 className="text-uppercase">FOREST</h4>
-                        <span>Package: €1,571,000</span>
-                        <hr className="line-info" />
-                      </Col>
-                    </Row>
-                    <Row>
-                      <ListGroup>
-                        <ListGroupItem>
-                          House in Finland: €625,000
-                        </ListGroupItem>
-                        <ListGroupItem>
-                          House in Bosnia and Herzegovina: €323,000
-                        </ListGroupItem>
-                        <ListGroupItem>
-                          House in Hungary: €623,000
-                        </ListGroupItem>
-                      </ListGroup>
-                    </Row>
-                  </CardBody>
-                  <CardFooter className="text-center">
-                    <Button className="btn-simple" color="info" disabled={true}>
-                      Purchased
-                    </Button>
-                  </CardFooter>
-                </Card>
-              </Col>
+              {housingPackages.map((hp) => {
+                const houses =
+                  hp["houses"] &&
+                  hp["houses"].map((h) => {
+                    return (
+                      <ListGroupItem key={h["physicalAddress"]}>
+                        <i className="tim-icons icon-double-right" />{" "}
+                        {h["physicalAddress"]}
+                      </ListGroupItem>
+                    );
+                  });
+
+                return (
+                  <Col md="4" key={hp["name"]}>
+                    <Card className="card-coin card-plain">
+                      <CardHeader>
+                        <img
+                          alt="..."
+                          className="img-center img-fluid"
+                          src={require("assets/img/bitcoin.png")}
+                        />
+                      </CardHeader>
+                      <CardBody>
+                        <Row>
+                          <Col className="text-center" md="12">
+                            <h4 className="text-uppercase">{hp["name"]}</h4>
+                            <span>Package value: {hp["totalValue"]}</span>
+                            <hr className="line-primary" />
+                          </Col>
+                        </Row>
+                        <Row>
+                          <ListGroup>{houses}</ListGroup>
+                        </Row>
+                      </CardBody>
+                      <CardFooter className="text-center">
+                        <Button
+                          className="btn-simple"
+                          color="primary"
+                          disabled={hp["balance"] > 0}
+                          onClick={(e) => {
+                            e.preventDefault();
+                            setTabs(2);
+                            window.scrollTo(0, 0);
+                          }}
+                        >
+                          {hp["balance"] > 0 ? "Purchased" : "Buy"}
+                        </Button>
+                      </CardFooter>
+                    </Card>
+                  </Col>
+                );
+              })}
             </Row>
           </Container>
         </section>
