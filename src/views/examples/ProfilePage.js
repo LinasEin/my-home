@@ -31,7 +31,6 @@ import {
   FormGroup,
   Form,
   Input,
-  FormText,
   NavItem,
   NavLink,
   Nav,
@@ -80,9 +79,10 @@ let ps = null;
 
 // SKI, BEACH, FOREST
 const smartContracts = [
-  "0x129F5dc1f5B4F3D7272952a3e0EfD25E2868841B",
-  "0xF5a1fa68736085BC2A2Fc570C81D2a59E332fdf2",
-  "0x88C9891DC3DAb365B137303f2Fcd5cdD343944D7",
+  "0x603bac55d56e7bEBD5fcd97618B766162b973413",
+  "0x5965853DA2Bf7dcb8BDd8477C61A10c025781D7C",
+  "0x3E0b2aF1fB618fB28F0a603CCEDfA81bADa634Ec",
+  // "0x88C9891DC3DAb365B137303f2Fcd5cdD343944D7",
 ];
 
 export default function ProfilePage() {
@@ -152,6 +152,7 @@ export default function ProfilePage() {
               .filter(
                 (ballot) =>
                   ballot &&
+                  ballot["ballotOwner"] &&
                   ethers.utils.getAddress(ballot["ballotOwner"]) !==
                     ethers.utils.getAddress(
                       "0x0000000000000000000000000000000000000000"
@@ -197,6 +198,7 @@ export default function ProfilePage() {
           package: housingPackage["package"],
           balance: parseInt(balance),
           totalValue: totalValue,
+          totalValueDec: decimalTotalValue,
           availableShares: parseInt(ownerBalance),
           houses: houses,
           value: value,
@@ -350,7 +352,12 @@ export default function ProfilePage() {
                           <Label sm="3">Your balance:</Label>
                           <Col sm="9">
                             <FormGroup>
-                              <Input type="text" disabled value={userBalance} />
+                              <Input
+                                type="text"
+                                disabled
+                                style={{ color: "white" }}
+                                value={userBalance}
+                              />
                             </FormGroup>
                           </Col>
                         </Row>
@@ -363,13 +370,13 @@ export default function ProfilePage() {
                                   type="select"
                                   name="select"
                                   id="select"
-                                  value={ashares}
+                                  value={packageToBuy}
                                   onChange={(e) => {
                                     const res = housingPackages.filter((hp) => {
                                       return hp["name"] === e.target.value;
                                     });
 
-                                    setPackageToBuy(res[0]);
+                                    setPackageToBuy(res[0]["name"]);
                                     setAShares(res[0]["availableShares"]);
                                   }}
                                 >
@@ -389,7 +396,12 @@ export default function ProfilePage() {
                           <Label sm="3">Available shares:</Label>
                           <Col sm="9">
                             <FormGroup>
-                              <Input type="text" disabled value={ashares} />
+                              <Input
+                                type="text"
+                                style={{ color: "white" }}
+                                disabled
+                                value={ashares}
+                              />
                             </FormGroup>
                           </Col>
                         </Row>
@@ -417,7 +429,21 @@ export default function ProfilePage() {
                             const hpackage = housingPackages.filter(
                               (hp) => hp["name"] === packageToBuy
                             )[0];
-                            hpackage["mhpackage"].buy(amountToBuy);
+                            let requiredEther =
+                              (hpackage["totalValueDec"] / 100) *
+                                amountToBuy *
+                                Math.pow(10, -18) +
+                              Math.pow(10, -13);
+                            console.log(requiredEther.toString());
+                            requiredEther = requiredEther.toFixed(
+                              requiredEther.toString().split("-")[1]
+                            );
+                            console.log(requiredEther.toString());
+                            hpackage["mhpackage"].buy(amountToBuy, {
+                              value: ethers.utils.parseEther(
+                                requiredEther.toString()
+                              ),
+                            });
                           }}
                         >
                           <i className="tim-icons icon-send" />
@@ -433,13 +459,13 @@ export default function ProfilePage() {
                                   type="select"
                                   name="select"
                                   id="select"
-                                  value={ashares}
+                                  value={packageToBuy}
                                   onChange={(e) => {
                                     const res = housingPackages.filter((hp) => {
                                       return hp["name"] === e.target.value;
                                     });
 
-                                    setPackageToBuy(res[0]);
+                                    setPackageToBuy(res[0]["name"]);
                                     setAShares(res[0]["availableShares"]);
                                   }}
                                 >
@@ -460,6 +486,7 @@ export default function ProfilePage() {
                           <Col sm="9">
                             <FormGroup>
                               <Input
+                                style={{ color: "white" }}
                                 type="text"
                                 disabled
                                 value={

@@ -16,22 +16,7 @@
 
 */
 import React from "react";
-import {
-  Button,
-  Card,
-  CardHeader,
-  CardBody,
-  CardFooter,
-  CardTitle,
-  ListGroupItem,
-  ListGroup,
-  Container,
-  Row,
-  Col,
-} from "reactstrap";
-
-// core components
-import Footer from "components/Footer/Footer.js";
+import { Card, CardBody, CardTitle, Container, Row, Col } from "reactstrap";
 
 export default function Basics() {
   // const handleGetTokenInfo = async (e) => {
